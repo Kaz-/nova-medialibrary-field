@@ -66,6 +66,13 @@ class Medialibrary extends Field
 
     public mixed $moveMediaToTargetModelCallback = null;
 
+    /**
+     * The field that this field depends on.
+     *
+     * @var array
+     */
+    protected $dependsOn = [];
+
     public function __construct(
         string $name,
         string $collectionName = '',
@@ -92,6 +99,31 @@ class Medialibrary extends Field
         $this->attribute = $attribute;
 
         return $this;
+    }
+
+    /**
+     * Set the field that this field depends on.
+     *
+     * @param string $field
+     * @param mixed $value
+     * @return $this
+     */
+    public function dependsOn($field, $value)
+    {
+        $this->dependsOn = [$field => $value];
+        return $this;
+    }
+
+    /**
+     * Prepare the field for JSON serialization.
+     *
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return array_merge(parent::jsonSerialize(), [
+            'dependsOn' => $this->dependsOn,
+        ]);
     }
 
     public function fields(callable $callback): self
