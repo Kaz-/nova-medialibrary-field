@@ -34,18 +34,14 @@ export default {
     shouldShow() {
       const format = this.field.resource.format;
 
-      console.log('dependsOn:', this.field.dependsOn);
-      console.log('resource:', this.field.resource);
+
 
       if (!this.field.dependsOn || Object.keys(this.field.dependsOn).length === 0) {
         return true;
       }
 
       const [field, value] = Object.entries(this.field.dependsOn)[0];
-      console.log('field:', field);
-      console.log('value:', value);
-      console.log('resource[field]:', this.field.resource[field]);
-      console.log('resource[field] === value:', this.field.resource[field] === value);
+
 
       return this.field.resource[field] === value;
     },
@@ -73,7 +69,6 @@ export default {
 
   mounted() {
     Nova.$on('format-change', (fieldValue) => {
-      console.log('Format change event received:', fieldValue);
       if (this.field.resource) {
         this.currentFormat = fieldValue;
         this.field.resource.format = fieldValue;

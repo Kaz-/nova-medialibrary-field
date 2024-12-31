@@ -5861,18 +5861,12 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
   computed: {
     shouldShow: function shouldShow() {
       var format = this.field.resource.format;
-      console.log('dependsOn:', this.field.dependsOn);
-      console.log('resource:', this.field.resource);
       if (!this.field.dependsOn || Object.keys(this.field.dependsOn).length === 0) {
         return true;
       }
       var _Object$entries$ = _slicedToArray(Object.entries(this.field.dependsOn)[0], 2),
         field = _Object$entries$[0],
         value = _Object$entries$[1];
-      console.log('field:', field);
-      console.log('value:', value);
-      console.log('resource[field]:', this.field.resource[field]);
-      console.log('resource[field] === value:', this.field.resource[field] === value);
       return this.field.resource[field] === value;
     }
   },
@@ -5895,7 +5889,6 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
   mounted: function mounted() {
     var _this = this;
     Nova.$on('format-change', function (fieldValue) {
-      console.log('Format change event received:', fieldValue);
       if (_this.field.resource) {
         _this.currentFormat = fieldValue;
         _this.field.resource.format = fieldValue;
