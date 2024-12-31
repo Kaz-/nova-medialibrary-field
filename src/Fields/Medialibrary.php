@@ -78,8 +78,7 @@ class Medialibrary extends Field
         string $collectionName = '',
         string $diskName = '',
         string $attribute = null,
-    )
-    {
+    ) {
         parent::__construct($name, $attribute);
 
         $this->collectionName = $collectionName;
@@ -123,6 +122,7 @@ class Medialibrary extends Field
     {
         return array_merge(parent::jsonSerialize(), [
             'dependsOn' => $this->dependsOn,
+            'resource' => $this->resource
         ]);
     }
 
@@ -331,6 +331,8 @@ class Medialibrary extends Field
 
     public function resolve($resource, $attribute = null): void
     {
+        parent::resolve($resource, $attribute); // Ensure the parent resolve method is called
+        $this->resource = $resource; // Explicitly set the resource property
         $this->value = (string) Str::uuid();
     }
 

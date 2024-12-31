@@ -5788,35 +5788,44 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
       "default": false
     }
   },
+  data: function data() {
+    return {
+      currentFormat: null
+    };
+  },
   computed: {
     shouldShow: function shouldShow() {
-      // If dependsOn is not set, always show the field
+      // Track format changes through data property
+      this.currentFormat = this.field.resource.format;
+      console.log('dependsOn:', this.field.dependsOn);
+      console.log('resource:', this.field.resource);
       if (!this.field.dependsOn || Object.keys(this.field.dependsOn).length === 0) {
         return true;
       }
-
-      // Get the dependent field and its expected value
       var _Object$entries$ = _slicedToArray(Object.entries(this.field.dependsOn)[0], 2),
         field = _Object$entries$[0],
         value = _Object$entries$[1];
-
-      // Check if the dependent field's value matches the expected value
-      return this.$parent.resource[field] === value;
+      console.log('field:', field);
+      console.log('value:', value);
+      console.log('resource[field]:', this.field.resource[field]);
+      console.log('resource[field] === value:', this.field.resource[field] === value);
+      return this.field.resource[field] === value;
     }
   },
   mounted: function mounted() {
     var _this = this;
     // Listen for changes in the dependent field
-    Nova.$on('field-change', function (fieldAttribute, fieldValue) {
-      if (_this.field.dependsOn && fieldAttribute === Object.keys(_this.field.dependsOn)[0]) {
-        // Force re-render when the dependent field changes
-        _this.$forceUpdate();
+    Nova.$on('format-change', function (fieldValue) {
+      console.log('Format change event received:', fieldValue);
+      if (_this.field.resource) {
+        _this.currentFormat = fieldValue; // Update data property first
+        _this.field.resource.format = fieldValue;
+        _this.$forceUpdate(); // Force a re-render
       }
     });
   },
   beforeDestroy: function beforeDestroy() {
-    // Clean up the event listener
-    Nova.$off('field-change');
+    Nova.$off('format-change');
   }
 });
 
@@ -5835,6 +5844,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _MedialibraryField__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./MedialibraryField */ "./resources/js/components/MedialibraryField.vue");
 /* harmony import */ var laravel_nova__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! laravel-nova */ "./vendor/laravel/nova/resources/js/mixins/packages.js");
+function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) { n[e] = r[e]; } return n; }
+function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0) { ; } } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t["return"] && (u = t["return"](), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
+function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
@@ -5843,6 +5858,29 @@ __webpack_require__.r(__webpack_exports__);
   },
   mixins: [laravel_nova__WEBPACK_IMPORTED_MODULE_1__.FormField, laravel_nova__WEBPACK_IMPORTED_MODULE_1__.HandlesValidationErrors],
   props: ['resourceName', 'resourceId', 'field'],
+  computed: {
+    shouldShow: function shouldShow() {
+      var format = this.field.resource.format;
+      console.log('dependsOn:', this.field.dependsOn);
+      console.log('resource:', this.field.resource);
+      if (!this.field.dependsOn || Object.keys(this.field.dependsOn).length === 0) {
+        return true;
+      }
+      var _Object$entries$ = _slicedToArray(Object.entries(this.field.dependsOn)[0], 2),
+        field = _Object$entries$[0],
+        value = _Object$entries$[1];
+      console.log('field:', field);
+      console.log('value:', value);
+      console.log('resource[field]:', this.field.resource[field]);
+      console.log('resource[field] === value:', this.field.resource[field] === value);
+      return this.field.resource[field] === value;
+    }
+  },
+  data: function data() {
+    return {
+      currentFormat: null
+    };
+  },
   methods: {
     setInitialValue: function setInitialValue() {
       this.value = this.field.value || '';
@@ -5853,6 +5891,20 @@ __webpack_require__.r(__webpack_exports__);
     handleChange: function handleChange(value) {
       this.value = value;
     }
+  },
+  mounted: function mounted() {
+    var _this = this;
+    Nova.$on('format-change', function (fieldValue) {
+      console.log('Format change event received:', fieldValue);
+      if (_this.field.resource) {
+        _this.currentFormat = fieldValue;
+        _this.field.resource.format = fieldValue;
+        _this.$forceUpdate();
+      }
+    });
+  },
+  beforeDestroy: function beforeDestroy() {
+    Nova.$off('format-change');
   }
 });
 
@@ -7630,7 +7682,8 @@ __webpack_require__.r(__webpack_exports__);
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_MedialibraryField = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("MedialibraryField");
   var _component_DefaultField = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("DefaultField");
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_DefaultField, {
+  return $options.shouldShow ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_DefaultField, {
+    key: 0,
     field: $props.field,
     errors: _ctx.errors,
     "full-width-content": true,
@@ -7645,7 +7698,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       }, null, 8 /* PROPS */, ["field", "resource-name", "resource-id"])];
     }),
     _: 1 /* STABLE */
-  }, 8 /* PROPS */, ["field", "errors", "show-help-text"]);
+  }, 8 /* PROPS */, ["field", "errors", "show-help-text"])) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true);
 }
 
 /***/ }),
